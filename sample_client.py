@@ -3,8 +3,12 @@ import time
 from threading import Thread
 import websockets
 import asyncio
+import pandas as pd
 
 stock_data = []
+TDSession = TDClient(
+    credentials_path="C:\\AutoTrading\\tdameritrade_settings.json"
+)
 def start_streaming():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -19,6 +23,9 @@ def start_streaming():
         fields=[0, 1, 2, 3, 4]
     )
     client.stream(stock_data)
+
+df = TDSession.get_price_history_for_day_trading('SPY')
+
 thread = Thread(target=start_streaming)
 thread.start()
 # start_streaming()
@@ -45,7 +52,7 @@ TDSession.login()
 # Create a streaming sesion
 TDStreamingClient = TDSession.create_streaming_session()
 TDStreamingClient.write_behavior(
-    file_path = "raw_data.csv", 
+    file_path = "raw_data.csv",
     append_mode = True
 )
 TDStreamingClient.timesale(service='TIMESALE_FUTURES', symbols=['/ES'], fields=[0, 1, 2, 3, 4])
