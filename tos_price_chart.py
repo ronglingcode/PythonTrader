@@ -21,7 +21,7 @@ today_ago = str(int(round(today_ago.timestamp() * 1000)))
 hist_startDate = today_ago
 hist_endDate = datetime_now
 
-response = TDSession.get_price_for_current_day(
+response = TDSession.get_price_history_for_day_trading(
     symbol='SPY',
 )
 candles = response['candles']
