@@ -36,6 +36,7 @@ from td.exceptions import ForbidError
 from td.exceptions import NotFndError
 from td.exceptions import ServerError
 from td.exceptions import GeneralError
+from helper import convert_price_history_to_data_frame
 
 class TDClient():
     def __init__(self, credentials_path: str = None,
@@ -786,7 +787,8 @@ class TDClient():
             end=(int)(datetime.timestamp(now))
         )
         response = requests.get(url)
-        return response.json()
+        response_json = response.json()
+        return convert_price_history_to_data_frame(response_json)
 
     def search_instruments(self, symbol: str, projection: str = None) -> Dict:
         """ Search or retrieve instrument data, including fundamental data.
