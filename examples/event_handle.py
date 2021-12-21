@@ -8,12 +8,12 @@ plt.rcParams['keymap.save'].remove('s')
 plt.rcParams['keymap.fullscreen'].remove('f')
 ticker = 'AAPL'
 start = '2021-12-16'
-interval = '5m'
+interval = '15m'
 data = yf.download(tickers=ticker, start=start, period='1d', interval=interval)
 print(data)
 
 col = mpf.make_marketcolors(up='#2E7D32',down='#D32F2F',inherit=True)
-sty = mpf.make_mpf_style(base_mpf_style='nightclouds', marketcolors=col)
+sty = mpf.make_mpf_style(base_mpf_style='charles', marketcolors=col)
 
 kwargs = dict(type='candle', volume=True, style=sty, returnfig=True)
 fig, ax = mpf.plot(data, **kwargs)
