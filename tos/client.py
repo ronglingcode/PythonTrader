@@ -760,13 +760,10 @@ class TDClient():
         # build the params dictionary
         params = {
             'apikey': self.client_id,
-            'period': period,
-            'periodType': period_type,
             'startDate': start_date,
             'endDate': end_date,
             'frequency': frequency,
             'frequencyType': frequency_type,
-            'needExtendedHoursData': extended_hours
         }
 
         # define the endpoint
@@ -774,6 +771,11 @@ class TDClient():
 
         # return the response of the get request.
         return self._make_request(method='get', endpoint=endpoint, params=params)
+    
+    def get_price_for_current_day(self, symbol: str) -> Dict:
+        url = "https://api.tdameritrade.com/v1/marketdata/SPY/pricehistory?apikey=GPH5HXCYICGCYMQWFGNZAGK8EQJIUX5N&frequencyType=minute&frequency=1&startDate=1639837800000&endDate=1640110857602"
+        x = requests.get(url)
+        return x.json()
 
     def search_instruments(self, symbol: str, projection: str = None) -> Dict:
         """ Search or retrieve instrument data, including fundamental data.
