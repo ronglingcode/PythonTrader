@@ -684,7 +684,7 @@ class TDStreamerClient():
                 if 'data' in message_decoded:
                     for data in message_decoded['data']:
                         service = data['service']
-                        if service == 'TIMESALE_FUTURES':
+                        if service in ['TIMESALE_FUTURES', 'TIMESALE_EQUITY']:
                             for content in data['content']:
                                 timesale = StreamingTimeSaleContent()
                                 timesale.load_from_tos(content)
