@@ -15,6 +15,8 @@ import websockets
 from td.enums import CSV_FIELD_KEYS
 from td.enums import CSV_FIELD_KEYS_LEVEL_2
 from td.enums import STREAM_FIELD_IDS
+from tos.helper import add_or_update_data_frame
+from data_models.streaming_timesales_content import StreamingTimeSaleContent
 
 
 class TDStreamerClient():
@@ -445,7 +447,6 @@ class TDStreamerClient():
         ----
         [str] -- A JSON string with the login details.
         """
-        print(self.data_requests)
 
         return json.dumps(self.data_requests)
 
@@ -480,7 +481,7 @@ class TDStreamerClient():
 
         return await self._receive_message(return_value=True)
 
-    def stream(self, stock_data, print_to_console: bool = True) -> None:
+    def stream(self, data_frame, print_to_console: bool = True) -> None:
         """Starts the stream and prints the output to the console.
         Initalizes the stream by building a login request, starting 
         an event loop, creating a connection, passing through the 
@@ -493,7 +494,7 @@ class TDStreamerClient():
 
         # Print it to the console.
         self.print_to_console = print_to_console
-        self.stock_data = stock_data
+        self.data_frame = data_frame
         
         # Connect to the Websocket.
         self.loop.run_until_complete(self._connect())
@@ -588,8 +589,6 @@ class TDStreamerClient():
 
         # Create a connection.
         self.connection = await websockets.connect(self.websocket_url)
-        print(self.connection)
-        print(self.connection.__dict__)
 
         # See if we are connected.
         is_connected = await self._check_connection()
@@ -674,14 +673,22 @@ class TDStreamerClient():
                 if return_value:
                     return message_decoded
 
-                
+                """
                 print('='*20)
                 print('Message Received:')
                 print('-'*20)
                 print(message_decoded)
                 print('-'*20)
                 print('') 
-                self.stock_data.append(1)
+                """
+                if 'data' in message_decoded:
+                    for data in message_decoded['data']:
+                        service = data['service']
+                        if service == 'TIMESALE_FUTURES':
+                            for content in data['content']:
+                                timesale = StreamingTimeSaleContent()
+                                timesale.load_from_tos(content)
+                                add_or_update_data_frame(self.data_frame, timesale)
 
             except websockets.exceptions.ConnectionClosed:
 

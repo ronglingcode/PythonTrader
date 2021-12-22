@@ -36,7 +36,7 @@ from td.exceptions import ForbidError
 from td.exceptions import NotFndError
 from td.exceptions import ServerError
 from td.exceptions import GeneralError
-from helper import convert_price_history_to_data_frame
+from tos.helper import convert_price_history_to_data_frame
 
 class TDClient():
     def __init__(self, credentials_path: str = None,
@@ -776,16 +776,18 @@ class TDClient():
     def get_price_history_for_day_trading(self, symbol: str) -> Dict:
         url_format = "https://api.tdameritrade.com/v1/marketdata/{symbol}/pricehistory?apikey={client_id}&frequencyType=minute&frequency=1&startDate={start}&endDate={end}"
 
-        now = datetime.now()
-        mid_night = datetime(now.year, now.month, now.day)
+        now = datetime.datetime.now()
+        mid_night = datetime.datetime(now.year, now.month, now.day)
         # vwap start at 10PM of previous day on Pacific time
-        vwap_start = mid_night - timedelta(hours=2)
+        vwap_start = mid_night - timedelta(hours=10)
         url = url_format.format(
             symbol=symbol,
             client_id=self.client_id,
-            start=(int)(datetime.timestamp(vwap_start)),
-            end=(int)(datetime.timestamp(now))
+            start=(int)(datetime.datetime.timestamp(vwap_start)),
+            end=(int)(datetime.datetime.timestamp(now))
         )
+
+        print(url)
         response = requests.get(url)
         response_json = response.json()
         return convert_price_history_to_data_frame(response_json)
