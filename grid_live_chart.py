@@ -39,17 +39,21 @@ style = mpf.make_mpf_style(base_mpf_style='yahoo', marketcolors=color)
 kwargs = dict(type='candle', volume=True, style=style)
 partial_df = df.iloc[-60:]
 
-fig = mpf.figure(figsize=(12,9))
+fig = mpf.figure(figsize=(12,9), style='yahoo')
+
+gs = fig.add_gridspec(4, 2)
+
 #fig, axlist = mpf.plot(df, returnfig=True, **kwargs)
-ax_stock_1_price = fig.add_subplot(2,2,1,style='blueskies')
-ax_stock_2_price = fig.add_subplot(2,2,2,style='yahoo')
-ax_stock_1_volume = fig.add_subplot(2,2,3,style='blueskies')
-ax_stock_2_volume = fig.add_subplot(2,2,4,style='yahoo')
-s   = mpf.make_mpf_style(base_mpl_style='fast',base_mpf_style='nightclouds')
+# gs = fig.add_gridspec(nrows, ncols)
+# ax = fig.add_subplot(gs[row:row+rowspan, col:col+colspan])
+ax_stock_1_price = fig.add_subplot(gs[0:3, 0:1])
+ax_stock_2_price = fig.add_subplot(gs[0:3, 1:2])
+ax_stock_1_volume = fig.add_subplot(gs[3:4, 0:1])
+ax_stock_2_volume = fig.add_subplot(gs[3:4,1:2])
 
-mpf.plot(partial_df,ax=ax_stock_1_price, volume=ax_stock_1_volume, axtitle='blueskies')
-mpf.plot(partial_df,type='candle',ax=ax_stock_2_price, volume=ax_stock_2_volume,axtitle='yahoo')
-
+mpf.plot(partial_df,type='candle',ax=ax_stock_1_price, volume=ax_stock_1_volume, axtitle='blueskies', tight_layout=True)
+mpf.plot(partial_df,type='candle',ax=ax_stock_2_price, volume=ax_stock_2_volume,axtitle='yahoo', tight_layout=True)
+fig.tight_layout()
 
 def onclick(event):
     print(event.__dict__)
@@ -69,10 +73,13 @@ cid3 = fig.canvas.mpl_connect('key_release_event', onKeyRelease)
 def animate(i):
     ax_stock_1_price.clear()
     ax_stock_1_volume.clear()
+    ax_stock_2_price.clear()
+    ax_stock_2_volume.clear()
     partial_df = df.iloc[-60:]
-    mpf.plot(partial_df,ax=ax_stock_1_price, volume=ax_stock_1_volume,axtitle='blueskies',xrotation=15)
+    mpf.plot(partial_df,type='candle',ax=ax_stock_1_price, volume=ax_stock_1_volume,axtitle='blueskies')
+    mpf.plot(partial_df,type='candle',ax=ax_stock_2_price, volume=ax_stock_2_volume,axtitle='yahoo')
     #mpf.plot(partial_df,ax=ax1, volume=ax2, **kwargs2)
 
-ani = animation.FuncAnimation(fig, animate, interval=50)
+ani = animation.FuncAnimation(fig, animate, interval=1000)
 
 mpf.show()
