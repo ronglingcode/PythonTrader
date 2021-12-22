@@ -775,22 +775,15 @@ class TDClient():
         return self._make_request(method='get', endpoint=endpoint, params=params)
 
     def get_price_history_for_day_trading(self, symbol: str) -> Dict:
-        url_format = "https://api.tdameritrade.com/v1/marketdata/{symbol}/pricehistory?apikey={client_id}&frequencyType=minute&frequency=1&startDate={start}&endDate={end}"
-
-        now = datetime.datetime.now()
-        mid_night = datetime.datetime(now.year, now.month, now.day)
-        # vwap start at 10PM of previous day on Pacific time
-        vwap_start = mid_night - timedelta(hours=2)
-        url = url_format.format(
-            symbol=symbol,
-            client_id=self.client_id,
-            start=datetime_to_tos_timestamp(vwap_start),
-            end=datetime_to_tos_timestamp(now)
+        end_time = datetime.datetime.now()
+        start_time = end_time - timedelta(days=3)
+        response_json = self.get_price_history(
+            symbol=symbol, 
+            start_date= datetime_to_tos_timestamp(start_time),
+            end_date=datetime_to_tos_timestamp(end_time),
+            frequency_type='minute',
+            frequency=1,
         )
-
-        print(url)
-        response = requests.get(url)
-        response_json = response.json()
         return convert_price_history_to_data_frame(response_json)
 
     def search_instruments(self, symbol: str, projection: str = None) -> Dict:

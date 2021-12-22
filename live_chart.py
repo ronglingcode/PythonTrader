@@ -11,23 +11,23 @@ from matplotlib import pyplot as plt
 plt.rcParams['keymap.save'].remove('s')
 plt.rcParams['keymap.fullscreen'].remove('f')
 
-
+symbol = 'SPY'
 TDSession = TDClient(
     credentials_path="C:\\AutoTrading\\tdameritrade_settings.json"
 )
-#df = TDSession.get_price_history_for_day_trading('SPY')
-df = generate_sample_price_history()
-print(df)
+df = TDSession.get_price_history_for_day_trading(symbol)
 
 def start_streaming():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     client = TDSession.create_streaming_session()
-    client.timesale(
+    """client.timesale(
         service='TIMESALE_FUTURES',
         symbols=['/ES'],
         fields=[0, 1, 2, 3, 4]
     )
+    """
+    client.timesale(service='TIMESALE_EQUITY', symbols=[symbol], fields=[0, 1, 2, 3, 4])
     client.stream(df)
 
 
@@ -37,6 +37,7 @@ thread.start()
 color = mpf.make_marketcolors(up='#3A7153',down='#AC2E2E',inherit=True)
 style = mpf.make_mpf_style(base_mpf_style='yahoo', marketcolors=color)
 kwargs = dict(type='candle', volume=True, style=style)
+partial_df = df.iloc[-60:]
 fig, axlist = mpf.plot(df, returnfig=True, **kwargs)
 
 def onclick(event):
@@ -63,8 +64,8 @@ def animate(i):
     ax1.clear()
     ax2.clear()
     kwargs2 = dict(type='candle', style=style)
-    partial_df = df.iloc[-20:]
+    partial_df = df.iloc[-60:]
     mpf.plot(partial_df,ax=ax1, volume=ax2, **kwargs2)
 
-ani = animation.FuncAnimation(fig, animate, interval=100)
+ani = animation.FuncAnimation(fig, animate, interval=50)
 mpf.show()
