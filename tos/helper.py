@@ -3,6 +3,10 @@ import pandas as pd
 from helpers.datetime_helper import round_to_one_minute
 from data_models.streaming_timesales_content import StreamingTimeSaleContent
 
+def datetime_to_tos_timestamp(dt: datetime) -> int:
+    f = datetime.timestamp(dt) * 1000
+    return (int)(f)
+
 def convert_price_history_to_data_frame(json_data):
     candles = json_data['candles']
     data = {

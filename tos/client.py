@@ -37,6 +37,7 @@ from td.exceptions import NotFndError
 from td.exceptions import ServerError
 from td.exceptions import GeneralError
 from tos.helper import convert_price_history_to_data_frame
+from tos.helper import datetime_to_tos_timestamp
 
 class TDClient():
     def __init__(self, credentials_path: str = None,
@@ -779,12 +780,12 @@ class TDClient():
         now = datetime.datetime.now()
         mid_night = datetime.datetime(now.year, now.month, now.day)
         # vwap start at 10PM of previous day on Pacific time
-        vwap_start = mid_night - timedelta(hours=10)
+        vwap_start = mid_night - timedelta(hours=2)
         url = url_format.format(
             symbol=symbol,
             client_id=self.client_id,
-            start=(int)(datetime.datetime.timestamp(vwap_start)),
-            end=(int)(datetime.datetime.timestamp(now))
+            start=datetime_to_tos_timestamp(vwap_start),
+            end=datetime_to_tos_timestamp(now)
         )
 
         print(url)
