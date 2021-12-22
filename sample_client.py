@@ -1,7 +1,6 @@
 from tos.client import TDClient
 import time
 from threading import Thread
-import websockets
 import asyncio
 import pandas as pd
 
@@ -30,11 +29,6 @@ thread = Thread(target=start_streaming)
 thread.start()
 # start_streaming()
 
-print('begin while loop')
-while True:
-    time.sleep(1)
-    print(stock_data)
-    print('in while loop')
 
 """
 
